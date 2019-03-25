@@ -45,7 +45,7 @@ function crearTablero(): void {
     }
 }
 
-function agregarEventos() {
+function agregarEventos(): void {
     casillas.forEach((fila) => {
         fila.forEach((casilla) => {
             const elemento = document.getElementById(casilla.id);
@@ -57,17 +57,43 @@ function agregarEventos() {
     })
 }
 
-function cambiarEstado(casilla:Casilla, elemento: Element, evento: Event) {
-    switch (casilla.estado) {
-        case EstadoCasilla.Apagada:
-            casilla.estado = EstadoCasilla.Prendida;
-            elemento.className = "casilla prendida";
-            break;
-        case EstadoCasilla.Prendida:
-            casilla.estado = EstadoCasilla.Apagada;
-            elemento.className = "casilla apagada";
-            break;
-        default:
-            break;
+function cambiarEstado(casilla:Casilla, elementoOriginal: Element, evento: Event): void {
+    const casillasACambiar = buscarAdyacentes(casilla);
+
+    casillasACambiar.forEach(casillaACambiar => {
+        const elemento = document.getElementById(casillaACambiar.id);
+        setearEstado(casillaACambiar, elemento);
+    });
+    setearEstado(casilla, elementoOriginal);
+
+    function setearEstado(casillaACambiar: Casilla, elemento: Element){
+        switch (casillaACambiar.estado) {
+            case EstadoCasilla.Apagada:
+                casillaACambiar.estado = EstadoCasilla.Prendida;
+                elemento.className = estiloCasillaPrendida;            
+                break;
+            case EstadoCasilla.Prendida:
+                casillaACambiar.estado = EstadoCasilla.Apagada;
+                elemento.className = estiloCasillaApagada;
+                break;
+            default:
+                break;
+        }
     }
+}
+
+
+
+function buscarAdyacentes(casilla: Casilla): Casilla[] {
+    const posiciones = casilla.id.split("-");
+    const posX = Number(posiciones[0]);
+    const posY = Number(posiciones[1]);
+    const casillasAdyacentes: Casilla[] = [];
+
+    if (posX - 1 >= 0) casillasAdyacentes.push(casillas[posX - 1][posY]);
+    if (posX + 1 < tamano) casillasAdyacentes.push(casillas[posX + 1][posY]);
+    if (posY - 1 >= 0) casillasAdyacentes.push(casillas[posX][posY - 1]); 
+    if (posY + 1 < tamano) casillasAdyacentes.push(casillas[posX][posY + 1]);
+
+    return casillasAdyacentes;
 }
