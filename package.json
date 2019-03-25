@@ -1,0 +1,15 @@
+{
+  "name": "tp1-programacion3",
+  "version": "1.0.0",
+  "description": "Trabajo Practico 1 de Programacion 3 - Fuera luces",
+  "main": "app.js",
+  "scripts": {
+    "start": "tsc && node src/index.js"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.16.4",
+    "typescript": "^3.3.4000"
+  }
+}

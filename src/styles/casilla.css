@@ -1,0 +1,20 @@
+.casilla {
+    display: flex;
+    width: 4rem;
+    height: 4rem;
+    border: 3px solid black;
+    margin: 1px;
+}
+
+.casilla:hover{
+    opacity: 0.7;
+}
+
+.apagada {
+    background-color: grey;
+}
+
+.prendida {
+    background-color: yellow;
+}
+

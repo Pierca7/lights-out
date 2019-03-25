@@ -1,0 +1,22 @@
+body {
+    overflow: hidden;
+}
+
+.container {
+	position: absolute;
+	justify-content: center;
+	align-items: center;
+	width: 100%;
+	margin-top: 5rem;
+}
+
+.fila {
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+}
+
+.columna {
+    display: flex;
+    flex-direction: column;
+}

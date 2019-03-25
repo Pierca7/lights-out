@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+        "module": "ES6",
+        "noImplicitAny": true,
+        "outDir": "src/bin",
+    },
+    "include": [
+        "src/**/*.ts"
+    ],
+    "exclude": [
+        "node_modules",
+        "src/bin"
+    ]
+}
