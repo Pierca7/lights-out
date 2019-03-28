@@ -1,15 +1,19 @@
-import {Casilla, EstadoCasilla, casillaHTML, filaHTML, estiloCasillaApagada, estiloCasillaPrendida} from "../models/casilla.js";
+import {Casilla, EstadoCasilla} from "../models/casilla.js";
+
+const filaHTML = `<div id="fila{0}" class="fila"></div>`;
+const casillaHTML = `<div id="{0}" class="{1}"></div>`;
+const estiloCasillaPrendida = "casilla prendida";
+const estiloCasillaApagada = "casilla apagada";
 
 const casillas: Casilla[][] = [];
 const tamano: number = 3;
 
 window.onload = () => {
     crearTablero();
-    agregarEventos();
 }
 
 function crearTablero(): void {
-    const tablero = document.getElementById("app");
+    const tablero = document.getElementById("tablero");
 
     for(let i = 0; i< tamano; i++) {
         casillas.push([]);        
@@ -41,32 +45,28 @@ function crearTablero(): void {
                 estado: estadoInicial
             }     
         }
-
     }
+    agregarEventos();
 }
 
 function agregarEventos(): void {
     casillas.forEach((fila) => {
         fila.forEach((casilla) => {
             const elemento = document.getElementById(casilla.id);
-
-            elemento.addEventListener("click", (evento: Event) => {
-                cambiarEstado(casilla, elemento, evento);
-            })
+            elemento.addEventListener("click", (evento: Event) => cambiarEstado(evento));
         })
     })
 }
 
-function cambiarEstado(casilla:Casilla, elementoOriginal: Element, evento: Event): void {
-    const casillasACambiar = buscarAdyacentes(casilla);
+function cambiarEstado(evento: Event): void {
+    const casilla = evento.srcElement;
+    const casillasACambiar = buscarCasillasACambiar(casilla);
 
-    casillasACambiar.forEach(casillaACambiar => {
+    casillasACambiar.forEach(casillaACambiar => setearEstado(casillaACambiar));
+
+    function setearEstado(casillaACambiar: Casilla){
         const elemento = document.getElementById(casillaACambiar.id);
-        setearEstado(casillaACambiar, elemento);
-    });
-    setearEstado(casilla, elementoOriginal);
 
-    function setearEstado(casillaACambiar: Casilla, elemento: Element){
         switch (casillaACambiar.estado) {
             case EstadoCasilla.Apagada:
                 casillaACambiar.estado = EstadoCasilla.Prendida;
@@ -82,18 +82,17 @@ function cambiarEstado(casilla:Casilla, elementoOriginal: Element, evento: Event
     }
 }
 
-
-
-function buscarAdyacentes(casilla: Casilla): Casilla[] {
-    const posiciones = casilla.id.split("-");
+function buscarCasillasACambiar(elemento: Element): Casilla[] { 
+    const posiciones = elemento.id.split("-");
     const posX = Number(posiciones[0]);
     const posY = Number(posiciones[1]);
-    const casillasAdyacentes: Casilla[] = [];
+    const casillasACambiar: Casilla[] = [];
 
-    if (posX - 1 >= 0) casillasAdyacentes.push(casillas[posX - 1][posY]);
-    if (posX + 1 < tamano) casillasAdyacentes.push(casillas[posX + 1][posY]);
-    if (posY - 1 >= 0) casillasAdyacentes.push(casillas[posX][posY - 1]); 
-    if (posY + 1 < tamano) casillasAdyacentes.push(casillas[posX][posY + 1]);
+    casillasACambiar.push(casillas[posX][posY]);
+    if (posX - 1 >= 0) casillasACambiar.push(casillas[posX - 1][posY]);
+    if (posX + 1 < tamano) casillasACambiar.push(casillas[posX + 1][posY]);
+    if (posY - 1 >= 0) casillasACambiar.push(casillas[posX][posY - 1]); 
+    if (posY + 1 < tamano) casillasACambiar.push(casillas[posX][posY + 1]);
 
-    return casillasAdyacentes;
+    return casillasACambiar;
 }
