@@ -51,15 +51,15 @@ async function crearTablero(): Promise<void> {
     const filaHTML = await crearFila().then((fila: string) => fila);
     const casillaHTML = await crearCasilla().then((casilla: string) => casilla);
 
-    for(let i = 0; i< tamano; i++) {
-        casillas.push([]);        
-        const nuevaFila = filaHTML.replace("{0}", i.toString());
-        tablero.innerHTML += nuevaFila;
-        const filaElement = document.getElementById(`fila${i}`) || new Element();
+    for(let x = 0; x< tamano; x++) {
+        casillas.push([]);
 
-        for(let j = 0; j< tamano; j++) {
+        tablero.innerHTML += filaHTML.replace("{0}", x.toString());
+        const filaElement = document.getElementById(`fila${x}`);
+
+        for(let y = 0; y< tamano; y++) {
             const estadoInicial: EstadoCasilla = Math.round(Math.random());
-            const id = `${i}-${j}`;  
+            const id = `${x}-${y}`;  
 
             let nuevaCasilla = casillaHTML.replace("{0}", id );
 
@@ -76,7 +76,7 @@ async function crearTablero(): Promise<void> {
             
             filaElement.innerHTML += nuevaCasilla;
 
-            casillas[i][j] = {
+            casillas[x][y] = {
                 id: id,
                 estado: estadoInicial
             }     
@@ -86,7 +86,10 @@ async function crearTablero(): Promise<void> {
 }
 
 function agregarEventos(): void {
-    [].concat(...casillas).forEach((casilla: Casilla) => document.getElementById(casilla.id).addEventListener("click", (evento: Event) => cambiarEstado(evento)));
+    [].concat(...casillas).forEach((casilla: Casilla) => {
+        const elemento = document.getElementById(casilla.id);
+        elemento.addEventListener("click", (evento: Event) => cambiarEstado(evento));
+    });
 }
 
 function cambiarEstado(evento: Event): void {
@@ -96,7 +99,7 @@ function cambiarEstado(evento: Event): void {
     casillasACambiar.forEach(casillaACambiar => setearEstado(casillaACambiar));
 }
 
-function setearEstado(casillaACambiar: Casilla){
+function setearEstado(casillaACambiar: Casilla): void {
     const elemento = document.getElementById(casillaACambiar.id);
 
     switch (casillaACambiar.estado) {

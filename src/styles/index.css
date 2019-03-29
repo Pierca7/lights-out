@@ -1,5 +1,24 @@
 body {
     overflow: hidden;
+    background-image: url("../resources/app_background.jpg");
+}
+
+.cantidad-casillas {
+    margin: 0;
+    -webkit-appearance: none;
+    -moz-appearance: textfield;
+    border-radius: 25px;
+    border-color: black;
+    border-style: solid;
+    border-width: 3px;
+}
+
+.titulo {    
+    color: white;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-size: 3rem;
+    text-align: center;
+    text-shadow: 3px 0 0 black, -3px 0 0 black, 0 3px 0 black, 0 -3px 0 black, 1.5px 1.5px black, -1.5px -1.5px 0 black, 1.5px -1.5px 0 black, -1.5px 1.5px 0 black;
 }
 
 .container {
@@ -7,7 +26,8 @@ body {
 	justify-content: center;
 	align-items: center;
 	width: 100%;
-	margin-top: 5rem;
+    margin-top: 5rem;
+    opacity: 0.95;
 }
 
 .fila {
