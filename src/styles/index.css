@@ -1,6 +1,6 @@
 body {
     overflow: hidden;
-    background-image: url("../resources/app_background.jpg");
+    background-color: #333;
 }
 
 .cantidad-casillas {
@@ -11,6 +11,10 @@ body {
     border-color: black;
     border-style: solid;
     border-width: 3px;
+}
+
+.hidden {
+    display: none;
 }
 
 .titulo {    
@@ -24,7 +28,8 @@ body {
 .container {
 	position: absolute;
 	justify-content: center;
-	align-items: center;
+    align-items: center;
+    display: flex;
 	width: 100%;
     margin-top: 5rem;
     opacity: 0.95;

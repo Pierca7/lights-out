@@ -35,7 +35,12 @@ function get(url: string): Promise<any> {
 }
 
 window.onload = () => {
-    crearTablero();
+    document.getElementById("boton").addEventListener("click", async (evento: Event) => {
+        document.getElementById("controles").className = "hidden";
+        const tablero = await getTablero();
+        document.getElementById("app").innerHTML += tablero;
+        crearTablero();
+    })
 }
 
 function crearFila(): Promise<string> {
@@ -46,10 +51,14 @@ function crearCasilla(): Promise<string> {
     return get("public/views/casilla.html");
 }
 
+function getTablero(): Promise<string> {
+    return get("public/views/tablero.html");
+}
+
 async function crearTablero(): Promise<void> {
     const tablero = document.getElementById("tablero");
-    const filaHTML = await crearFila().then((fila: string) => fila);
-    const casillaHTML = await crearCasilla().then((casilla: string) => casilla);
+    const filaHTML = await crearFila();
+    const casillaHTML = await crearCasilla();
 
     for(let x = 0; x< tamano; x++) {
         casillas.push([]);
@@ -93,7 +102,7 @@ function agregarEventos(): void {
 }
 
 function cambiarEstado(evento: Event): void {
-    const casilla = evento.srcElement;
+    const casilla = evento.srcElement as Element;
     const casillasACambiar = buscarCasillasACambiar(casilla);
 
     casillasACambiar.forEach(casillaACambiar => setearEstado(casillaACambiar));
