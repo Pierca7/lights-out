@@ -21,6 +21,16 @@ var steps;      // integer, current steps of operation
 var playing;    // boolean, if playing
 var autogen;    // boolean, if playing with an auto-generated problem
 
+// --- finite field matrix solver
+
+var mat;    // integer[i][j]
+var cols;   // integer[]
+var m;      // count of rows of the matrix
+var n;      // count of columns of the matrix
+var np;     // count of columns of the enlarged matrix
+var r;      // minimum rank of the matrix
+var maxr;   // maximum rank of the matrix
+
 function setanscellimage(col, row, imgsrc)
 {
     eval("document.ans" + cellname(col, row) + ".src = '" + imgsrc + "'");
