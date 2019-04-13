@@ -1,4 +1,5 @@
-import {Casilla, EstadoCasilla} from "../models/casilla.js";
+import {Casilla} from "../models/casilla.js";
+import solve from "./solve.js";
 
 const estiloCasillaPrendida = "casilla prendida";
 const estiloCasillaApagada = "casilla apagada";
@@ -39,8 +40,12 @@ window.onload = () => {
         document.getElementById("controles").className = "hidden";
         const tablero = await getTablero();
         document.getElementById("app").innerHTML += tablero;
-        crearTablero();
+        crearTablero().then(() => {
+            solve(casillas);
+        });
     })
+
+
 }
 
 function crearFila(): Promise<string> {
@@ -67,27 +72,16 @@ async function crearTablero(): Promise<void> {
         const filaElement = document.getElementById(`fila${x}`);
 
         for(let y = 0; y< tamano; y++) {
-            const estadoInicial: EstadoCasilla = Math.round(Math.random());
+            const estadoInicial: boolean = Math.round(Math.random()) === 1;
             const id = `${x}-${y}`;  
-
-            let nuevaCasilla = casillaHTML.replace("{0}", id );
-
-            switch (estadoInicial) {
-                case EstadoCasilla.Apagada:
-                    nuevaCasilla = nuevaCasilla && nuevaCasilla.replace("{1}", estiloCasillaApagada) || "";
-                    break;
-                case EstadoCasilla.Prendida:
-                    nuevaCasilla = nuevaCasilla && nuevaCasilla.replace("{1}", estiloCasillaPrendida) || "";
-                    break;
-                default:
-                    break;
-            }
+            const nuevaCasilla = casillaHTML.replace("{0}", id )
+            .replace("{1}", estadoInicial ? estiloCasillaPrendida : estiloCasillaApagada);
             
             filaElement.innerHTML += nuevaCasilla;
 
             casillas[x][y] = {
                 id: id,
-                estado: estadoInicial
+                encendida: estadoInicial
             }     
         }
     }
@@ -110,19 +104,9 @@ function cambiarEstado(evento: Event): void {
 
 function setearEstado(casillaACambiar: Casilla): void {
     const elemento = document.getElementById(casillaACambiar.id);
-
-    switch (casillaACambiar.estado) {
-        case EstadoCasilla.Apagada:
-            casillaACambiar.estado = EstadoCasilla.Prendida;
-            elemento.className = estiloCasillaPrendida;            
-            break;
-        case EstadoCasilla.Prendida:
-            casillaACambiar.estado = EstadoCasilla.Apagada;
-            elemento.className = estiloCasillaApagada;
-            break;
-        default:
-            break;
-    }
+     
+    casillaACambiar.encendida = !casillaACambiar.encendida;
+    elemento.className = casillaACambiar.encendida ? estiloCasillaPrendida : estiloCasillaApagada;
 }
 
 function buscarCasillasACambiar(elemento: Element): Casilla[] { 
