@@ -1,5 +1,5 @@
-import {Casilla} from "../models/casilla.js";
-import solve from "./solve.js";
+import {Casilla} from "../models/Casilla.js";
+import GameSolver from "../helpers/GameSolver.js";
 
 const estiloCasillaPrendida = "casilla prendida";
 const estiloCasillaApagada = "casilla apagada";
@@ -41,7 +41,8 @@ window.onload = () => {
         const tablero = await getTablero();
         document.getElementById("app").innerHTML += tablero;
         crearTablero().then(() => {
-            solve(casillas);
+            const solver = new GameSolver();
+            solver.solve(casillas);
         });
     })
 
