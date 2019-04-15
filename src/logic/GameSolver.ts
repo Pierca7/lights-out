@@ -14,7 +14,7 @@ export default class GameSolver {
     private r: number;      // minimum rank of the matrix
     private maxr: number;   // maximum rank of the matrix
 
-    public solve(board: Tile[][]) {
+    public solve(board: Tile[][]): string {
         this.buildBinaryMatrix(board);
 
         var col;
@@ -32,7 +32,7 @@ export default class GameSolver {
                     var value;
                     j = anscols[row * this.colcount + col];
                     if (j < this.r) value = this.a(j, this.n); else value = 0;
-                    console.log(`Cell ${col} ${row} = ${value}`)
+                    if (value === 1) return `${col}-${row}`;
                 }
                 return;
             }
@@ -45,7 +45,6 @@ export default class GameSolver {
                 this.cells[i][j] = (tile.on) ? 1 : 0;
             });
         });
-        console.log(this.cells);
     }
 
     private solveProblem(goal: number): boolean {

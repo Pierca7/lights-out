@@ -6,6 +6,7 @@ import TileManager from "./TileManager.js";
 import "../models/CustomElement.js"
 
 export default class BoardManager {
+    private _clueButtonTemplate: string;
     private _boardTemplate: string;
     private _boardSize: number;
     private _board: Tile[][];
@@ -38,7 +39,16 @@ export default class BoardManager {
             }
         }
 
+        await this.createClueButton();
         tileManager.addTileAttributes();
+    }
+
+    public async createClueButton(): Promise<void> {
+        if (!this._clueButtonTemplate) {
+            this._clueButtonTemplate = await this.getClueButton();
+        }
+
+        document.getElementById("tablero").appendHTMLString(this._clueButtonTemplate);
     }
 
     public getBoard(): Tile[][] {
@@ -73,6 +83,11 @@ export default class BoardManager {
         return tilesOnAmount === 0;
     }
 
+    public giveClue(): void {
+        const tileToClick = this._solver.solve(this._board);
+        document.getElementById(tileToClick).className += " flicker";
+    }
+
     private initializeBoardMatrix(): void {
         this._board = [];
         
@@ -83,5 +98,9 @@ export default class BoardManager {
 
     private getBoardTemplate(): Promise<string> {
         return http.get("public/views/tablero.html");
+    }
+
+    private getClueButton(): Promise<string> {
+        return http.get("public/views/clueButton.html");
     }
 }

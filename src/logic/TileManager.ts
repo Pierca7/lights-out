@@ -35,6 +35,9 @@ export default class TileManager {
         [].concat(...this._board.getBoard()).forEach((tile: Tile) => {
             const tileElement = document.getElementById(tile.id);
 
+            document.getElementById("clueButton").addEventListener("click", () => {
+                this._board.giveClue();
+            })
             tileElement.addEventListener("click", (event: Event) => {
                 this.updateTiles(event)
                 this._board._solver.solve(this._board.getBoard());

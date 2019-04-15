@@ -18,3 +18,13 @@
     background-color: yellow;
 }
 
+.flicker {
+	animation: color_change 1s infinite alternate;
+}
+
+@keyframes color_change {
+	from { background-color: blue; }
+	to { background-color: red; }
+}
+
+
