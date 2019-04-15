@@ -4,7 +4,7 @@
   "description": "Trabajo Practico 1 de Programacion 3 - Fuera luces",
   "main": "app.js",
   "scripts": {
-    "start": "tsc && node src/index.js"
+    "start": "tsc && node src/server.js"
   },
   "author": "",
   "license": "MIT",

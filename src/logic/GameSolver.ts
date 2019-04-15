@@ -1,4 +1,4 @@
-import { Casilla } from "../models/Casilla.js";
+import { Tile } from "../models/Tile.js";
 
 export default class GameSolver {
     private colcount = 3;   // integer, number of columns
@@ -14,7 +14,7 @@ export default class GameSolver {
     private r: number;      // minimum rank of the matrix
     private maxr: number;   // maximum rank of the matrix
 
-    public solve(board: Casilla[][]) {
+    public solve(board: Tile[][]) {
         this.buildBinaryMatrix(board);
 
         var col;
@@ -39,10 +39,10 @@ export default class GameSolver {
         }
     }
 
-    private buildBinaryMatrix(board: Casilla[][]): void {
+    private buildBinaryMatrix(board: Tile[][]): void {
         board.forEach((row, i) => {
             row.forEach((tile, j) => {
-                this.cells[i][j] = (tile.encendida) ? 1 : 0;
+                this.cells[i][j] = (tile.on) ? 1 : 0;
             });
         });
         console.log(this.cells);
