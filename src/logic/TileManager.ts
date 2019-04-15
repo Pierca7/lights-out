@@ -31,10 +31,18 @@ export default class TileManager {
         }
     }
 
-    public addTileAttributes(board: Tile[][]): void {
-        [].concat(...board).forEach((tile: Tile) => {
+    public addTileAttributes(): void {
+        [].concat(...this._board.getBoard()).forEach((tile: Tile) => {
             const tileElement = document.getElementById(tile.id);
-            tileElement.addEventListener("click", (event: Event) => this.updateTiles(event));
+
+            tileElement.addEventListener("click", (event: Event) => {
+                this.updateTiles(event)
+                this._board._solver.solve(this._board.getBoard());
+
+                if (this._board.gameFinished()) {
+                    document.getElementById("tablero").className += " hidden";
+                }
+            })
         });
     }
     

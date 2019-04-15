@@ -1,5 +1,6 @@
 import http from "./Http.js";
 import { Tile } from "../models/Tile.js";
+import GameSolver from "../logic/GameSolver.js";
 import RowManager from "./RowManager.js";
 import TileManager from "./TileManager.js";
 import "../models/CustomElement.js"
@@ -8,9 +9,11 @@ export default class BoardManager {
     private _boardTemplate: string;
     private _boardSize: number;
     private _board: Tile[][];
+    public _solver: GameSolver;
 
     constructor(boardSize: number){
         this._boardSize = boardSize;
+        this._solver = new GameSolver();
         this.initializeBoardMatrix();
     }
 
@@ -35,7 +38,7 @@ export default class BoardManager {
             }
         }
 
-        tileManager.addTileAttributes(this._board);
+        tileManager.addTileAttributes();
     }
 
     public getBoard(): Tile[][] {
@@ -63,6 +66,12 @@ export default class BoardManager {
     
         return tilesToChange;
     }    
+
+    public gameFinished(): boolean {
+        const tilesOnAmount = [].concat(...this._board).filter((tile: Tile) => tile.on).length;
+        
+        return tilesOnAmount === 0;
+    }
 
     private initializeBoardMatrix(): void {
         this._board = [];

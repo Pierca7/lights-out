@@ -1,6 +1,4 @@
-import {Tile} from "../models/Tile.js";
 import http from "../logic/Http.js";
-import GameSolver from "../logic/GameSolver.js";
 import BoardManager from "../logic/BoardManager.js";
 import "../models/CustomElement.js"
 
@@ -34,7 +32,7 @@ export default class AppController {
 
     private addButtonAttributes(): void {
         document.getElementById("boton").addEventListener("click", (event: Event) => {
-            document.getElementById("controles").className = "hidden";
+            document.getElementById("controles").hidden = true;
             const boardSize = Number((<HTMLInputElement>document.getElementById("cantidadFilas")).value);
             
             this._boardManager = new BoardManager(boardSize);
