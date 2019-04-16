@@ -43,7 +43,9 @@ export default class BoardManager {
         document.getElementById("app").appendHTMLString(this._boardTemplate);
 
         this._boardSize = boardSize;
+
         this._initializeBoardMatrix();
+        
         this._solver = new GameSolver(this._boardSize);
         this._tileManager = new TileManager(this);
     
@@ -61,7 +63,7 @@ export default class BoardManager {
     public resetBoard(): Promise<void> {
         this._initializeBoardMatrix();
         this._movements = 0;
-        
+
         document.getElementById("tablero").remove();
         document.getElementById("congratulations").remove();
         document.getElementById("movements").innerHTML = "";
@@ -79,7 +81,32 @@ export default class BoardManager {
     public addBoardEvents(): void {
         if (this._tileManager) this._tileManager.addTileAttributes();
     }
+
+    public gameFinished(): boolean {
+        const tilesOnAmount = [].concat(...this._board).filter((tile: Tile) => tile.on).length;
+        
+        return tilesOnAmount === 0;
+    }
+
+    public findTilesToChange(element: HTMLElement): Tile[] { 
+        const position = element.id.split("-");
+        const posX = Number(position[0]);
+        const posY = Number(position[1]);
+        const tilesToChange: Tile[] = [];
     
+        tilesToChange.push(this._board[posX][posY]);
+        if (posX - 1 >= 0) tilesToChange.push(this._board[posX - 1][posY]);
+        if (posX + 1 < this._boardSize) tilesToChange.push(this._board[posX + 1][posY]);
+        if (posY - 1 >= 0) tilesToChange.push(this._board[posX][posY - 1]); 
+        if (posY + 1 < this._boardSize) tilesToChange.push(this._board[posX][posY + 1]);
+    
+        return tilesToChange;
+    }   
+    
+    public endGame(): void {
+        this._app.createCongratulations();
+    }
+
     private _initializeBoardMatrix(): void {
         this._board = [];
         

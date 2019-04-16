@@ -4,6 +4,7 @@ import "../models/CustomElement.js"
 
 export default class AppController {
     private _controlsTemplate: string;
+    private _congratulationsTemplate: string;
     private _clueButtonTemplate: string;
     private _minValue: number = 3;
     private _boardManager: BoardManager;
@@ -24,6 +25,27 @@ export default class AppController {
         this._addButtonAttributes();
     }
 
+    public async createCongratulations(): Promise<void> {
+        if (!this._congratulationsTemplate){
+            this._congratulationsTemplate = await this._getCongratulationsTemplate();
+        }
+        
+        const actualRecord = document.getElementById("record").innerHTML;
+        const newScore = this._boardManager.getMovements().toString();
+
+        if (!actualRecord || Number(newScore) < Number(actualRecord)) {
+            document.getElementById("record").innerHTML = newScore;
+        }
+
+        const congratulations = this._congratulationsTemplate.replace("{0}", newScore);
+
+        document.getElementById("tablero").className += " hidden";
+        document.getElementById("app").appendHTMLString(congratulations);  
+        document.getElementById("reset").addEventListener("click", () => {
+            this._boardManager.resetBoard();
+        })                  
+    }
+
     private _addInputAttributes(minValue: number): void {
         const boardSizeInput = <HTMLInputElement>document.getElementById("cantidadFilas");
         const minValueString = String(minValue);
@@ -42,7 +64,7 @@ export default class AppController {
             }
 
             document.getElementById("controles").remove();
-            
+
             await this._boardManager.createBoard(boardSize);
             await this._createClueButton();
             
@@ -67,6 +89,10 @@ export default class AppController {
 
     private _getClueButtonTemplate(): Promise<string> {
         return http.get("public/views/clueButton.html");
+    }
+
+    private _getCongratulationsTemplate(): Promise<string> {
+        return http.get("public/views/congratulations.html");
     }
 }
 

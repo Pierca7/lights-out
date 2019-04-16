@@ -5,15 +5,12 @@ import BoardManager from "./BoardManager.js";
 
 export default class TileManager {
     private _board: BoardManager;
-    private _boardSize: number;
     private _tileTemplate: string;
-    private _congratulationsTemplate: string;
     private _tileOnStyle = "casilla prendida";
     private _tileOffStyle = "casilla apagada";
 
     public constructor(board: BoardManager) {
         this._board = board;
-        this._boardSize = this._board.getBoard().length;
     }
     
     public async createTile(row: HTMLElement, rowIndex: number, columnIndex: number): Promise<Tile> {
@@ -43,57 +40,18 @@ export default class TileManager {
                 this._board.addMovement();
 
                 const movements = this._board.getMovements().toString();
+                document.getElementById("movements").innerHTML = movements;
 
-                document.getElementById("movements").innerHTML = movements
-
-                if (this.gameFinished()) {
-                    if (!this._congratulationsTemplate){
-                        this._congratulationsTemplate = await this._getCongratulationsTemplate();
-                    }
-                    
-                    const actualRecord = document.getElementById("record").innerHTML;
-
-                    if (!actualRecord || Number(movements) < Number(actualRecord)) {
-                        document.getElementById("record").innerHTML = movements;
-                    }
-
-                    const congratulations = this._congratulationsTemplate.replace("{0}", this._board.getMovements().toString());
-
-                    document.getElementById("tablero").className += " hidden";
-                    document.getElementById("app").appendHTMLString(congratulations);  
-                    document.getElementById("reset").addEventListener("click", () => {
-                        this._board.resetBoard();
-                    })                  
+                if (this._board.gameFinished()) {
+                    this._board.endGame();
                 }
             })
         });
-    }   
-
-    public gameFinished(): boolean {
-        const tilesOnAmount = [].concat(...this._board.getBoard()).filter((tile: Tile) => tile.on).length;
-        
-        return tilesOnAmount === 0;
     }
-
-    private _findTilesToChange(element: HTMLElement): Tile[] { 
-        const position = element.id.split("-");
-        const posX = Number(position[0]);
-        const posY = Number(position[1]);
-        const tilesToChange: Tile[] = [];
-        const board = this._board.getBoard();
-    
-        tilesToChange.push(board[posX][posY]);
-        if (posX - 1 >= 0) tilesToChange.push(board[posX - 1][posY]);
-        if (posX + 1 < this._boardSize) tilesToChange.push(board[posX + 1][posY]);
-        if (posY - 1 >= 0) tilesToChange.push(board[posX][posY - 1]); 
-        if (posY + 1 < this._boardSize) tilesToChange.push(board[posX][posY + 1]);
-    
-        return tilesToChange;
-    }   
     
     private _updateTiles(event: Event): void {
         const clickedTile = <HTMLElement>event.srcElement;
-        const tilesToChange = this._findTilesToChange(clickedTile);
+        const tilesToChange = this._board.findTilesToChange(clickedTile);
     
         tilesToChange.forEach(tileToChange => this._changeState(tileToChange));
     }
@@ -109,9 +67,7 @@ export default class TileManager {
         return http.get("public/views/tile.html");
     }
 
-    private _getCongratulationsTemplate(): Promise<string> {
-        return http.get("public/views/congratulations.html");
-    }
+
 }
 
 
