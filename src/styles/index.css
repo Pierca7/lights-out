@@ -1,5 +1,31 @@
 body {
-    background-color: #333;
+    background-color: #444;
+    color: white;
+}
+
+button {
+    margin: 5px;
+}
+
+.title {    
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-size: 3rem;
+    text-align: center;
+    text-shadow: 3px 0 0 black, -3px 0 0 black, 0 3px 0 black, 0 -3px 0 black, 1.5px 1.5px black, -1.5px -1.5px 0 black, 1.5px -1.5px 0 black, -1.5px 1.5px 0 black;
+}
+
+.subtitle {    
+    animation: rainbow 1s infinite alternate;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-size: 2rem;
+    text-align: center;
+    text-shadow: 2px 0 0 black, -2px 0 0 black, 0 2px 0 black, 0 -2px 0 black, 1px 1px black, -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black;
+}
+
+.game-info {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-size: 1rem;
+    text-align: center;
 }
 
 .cantidad-casillas {
@@ -17,11 +43,13 @@ body {
 }
 
 .container {
-	position: relative;
-    align-items: center;
+    position: relative;
     display: inline-flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 	width: 100%;
-    margin: 15px;
+    margin: 2rem;
     opacity: 0.95;
 }
 
@@ -34,4 +62,14 @@ body {
 .columna {
     display: flex;
     flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+@keyframes rainbow {
+	0% { color: blue; }
+    33% { color: red; }
+    66% { color: yellow; }
+    100% { color: blue; }
 }

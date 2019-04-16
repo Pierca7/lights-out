@@ -8,9 +8,9 @@ import AppController from "../controllers/AppController.js";
 export default class BoardManager {
     private _rowTemplate: string;
     private _boardTemplate: string;
+    private _movements: number = 0;
     private _boardSize: number;
     private _board: Tile[][];
-    private _movements: number = 0;
     private _tileManager: TileManager;
     private _solver: GameSolver;
     private _app: AppController;
@@ -42,7 +42,7 @@ export default class BoardManager {
         
         document.getElementById("app").appendHTMLString(this._boardTemplate);
 
-        this._boardSize = boardSize;
+        this._boardSize = Math.floor(boardSize);
 
         this._initializeBoardMatrix();
         
@@ -66,7 +66,7 @@ export default class BoardManager {
 
         document.getElementById("tablero").remove();
         document.getElementById("congratulations").remove();
-        document.getElementById("movements").innerHTML = "";
+        document.getElementById("movements").innerHTML = "-";
 
         this._app.createControls();
         

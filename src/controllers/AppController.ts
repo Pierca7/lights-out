@@ -33,7 +33,7 @@ export default class AppController {
         const actualRecord = document.getElementById("record").innerHTML;
         const newScore = this._boardManager.getMovements().toString();
 
-        if (!actualRecord || Number(newScore) < Number(actualRecord)) {
+        if (actualRecord === "-" || Number(newScore) < Number(actualRecord)) {
             document.getElementById("record").innerHTML = newScore;
         }
 

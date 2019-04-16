@@ -23,8 +23,7 @@
 }
 
 @keyframes color_change {
-	from { background-color: blue; }
-	to { background-color: red; }
+	from { background-color: lawngreen; }
+	to { background-color: lightgreen; }
 }
-
 
