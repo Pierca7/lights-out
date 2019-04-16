@@ -1,94 +1,66 @@
+import "../models/CustomElement.js";
 import http from "./Http.js";
 import { Tile } from "../models/Tile.js";
 import GameSolver from "../logic/GameSolver.js";
-import RowManager from "./RowManager.js";
 import TileManager from "./TileManager.js";
-import "../models/CustomElement.js"
 
 export default class BoardManager {
-    private _clueButtonTemplate: string;
+    private _rowTemplate: string;
     private _boardTemplate: string;
     private _boardSize: number;
     private _board: Tile[][];
-    public _solver: GameSolver;
+    private _tileManager: TileManager;
+    private _solver: GameSolver;
 
-    constructor(boardSize: number){
-        this._boardSize = boardSize;
-        this._solver = new GameSolver();
-        this.initializeBoardMatrix();
-    }
-
-    public async createBoard(): Promise<void> {
-        if (!this._boardTemplate) {
-            this._boardTemplate = await this.getBoardTemplate();
-        }
-
-        document.getElementById("app").appendHTMLString(this._boardTemplate);
-        
-        const boardElement = document.getElementById("tablero");
-        const rowManager = new RowManager(boardElement);
-        const tileManager = new TileManager(this);
-    
-        for(let rowIndex = 0; rowIndex < this._boardSize; rowIndex++) {            
-            const newRowElement = await rowManager.createRow(rowIndex);
-
-            for(let columnIndex = 0; columnIndex < this._boardSize; columnIndex++) {
-                const newTileElement = await tileManager.createTile(newRowElement, rowIndex, columnIndex);
-                
-                this._board[rowIndex][columnIndex] = newTileElement;
-            }
-        }
-
-        await this.createClueButton();
-        tileManager.addTileAttributes();
-    }
-
-    public async createClueButton(): Promise<void> {
-        if (!this._clueButtonTemplate) {
-            this._clueButtonTemplate = await this.getClueButton();
-        }
-
-        document.getElementById("tablero").appendHTMLString(this._clueButtonTemplate);
+    public getSolver(): GameSolver {
+        return this._solver;
     }
 
     public getBoard(): Tile[][] {
         return this._board;
     }
 
-    public resetBoard(): Promise<void> {
-        this.initializeBoardMatrix();
-        document.getElementById("tablero").remove();
+    public async createBoard(boardSize: number): Promise<void> {
+        if (!this._boardTemplate) {
+            this._boardTemplate = await this._getBoardTemplate();
+        }
         
-        return this.createBoard();
+        document.getElementById("app").appendHTMLString(this._boardTemplate);
+
+        this._boardSize = boardSize;
+        this._initializeBoardMatrix();
+        this._solver = new GameSolver(this._boardSize);
+        this._tileManager = new TileManager(this);
+    
+        for(let rowIndex = 0; rowIndex < this._boardSize; rowIndex++) {            
+            const newRowElement = await this._createRow(rowIndex);
+
+            for(let columnIndex = 0; columnIndex < this._boardSize; columnIndex++) {
+                const newTileElement = await this._tileManager.createTile(newRowElement, rowIndex, columnIndex);
+                
+                this._board[rowIndex][columnIndex] = newTileElement;
+            }
+        }
     }
 
-    public findTilesToChange(element: HTMLElement): Tile[] { 
-        const position = element.id.split("-");
-        const posX = Number(position[0]);
-        const posY = Number(position[1]);
-        const tilesToChange: Tile[] = [];
-    
-        tilesToChange.push(this._board[posX][posY]);
-        if (posX - 1 >= 0) tilesToChange.push(this._board[posX - 1][posY]);
-        if (posX + 1 < this._boardSize) tilesToChange.push(this._board[posX + 1][posY]);
-        if (posY - 1 >= 0) tilesToChange.push(this._board[posX][posY - 1]); 
-        if (posY + 1 < this._boardSize) tilesToChange.push(this._board[posX][posY + 1]);
-    
-        return tilesToChange;
-    }    
-
-    public gameFinished(): boolean {
-        const tilesOnAmount = [].concat(...this._board).filter((tile: Tile) => tile.on).length;
+    public resetBoard(): Promise<void> {
+        this._initializeBoardMatrix();
+        document.getElementById("tablero").remove();
         
-        return tilesOnAmount === 0;
+        return this.createBoard(this._boardSize);
     }
 
     public giveClue(): void {
         const tileToClick = this._solver.solve(this._board);
+        console.log(tileToClick);
         document.getElementById(tileToClick).className += " flicker";
     }
 
-    private initializeBoardMatrix(): void {
+    public addTileEvents(): void {
+        if (this._tileManager) this._tileManager.addTileAttributes();
+    }
+    
+    private _initializeBoardMatrix(): void {
         this._board = [];
         
         for(let i = 0; i < this._boardSize; i++) {
@@ -96,11 +68,23 @@ export default class BoardManager {
         }
     }
 
-    private getBoardTemplate(): Promise<string> {
-        return http.get("public/views/tablero.html");
+    private async _createRow(rowIndex: number): Promise<HTMLElement> {
+        if (!this._rowTemplate) {
+            this._rowTemplate = await this._getRowTemplate();
+        }
+
+        const newRow = this._rowTemplate.replace("{0}", rowIndex.toString());
+        document.getElementById("tablero").appendHTMLString(newRow);
+        const newRowElement = document.getElementById(`fila${rowIndex}`);
+
+        return newRowElement;
     }
 
-    private getClueButton(): Promise<string> {
-        return http.get("public/views/clueButton.html");
+    private _getRowTemplate(): Promise<string> {
+        return http.get("public/views/row.html");
+    }   
+
+    private _getBoardTemplate(): Promise<string> {
+        return http.get("public/views/board.html");
     }
 }

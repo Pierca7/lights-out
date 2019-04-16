@@ -1,37 +1,38 @@
 import { Tile } from "../models/Tile.js";
 
 export default class GameSolver {
-    private colcount = 3;   // integer, number of columns
-    private rowcount = 3;   // integer, number of rows
-    private imgcount = 2;   // integer, number of states of a tile
-    private cells: number[][] = [[],[],[]];      // integer[row][col], current states of tile
+    private _tileStates = 2;
+    private _matrixOrder: number;
+    private _binaryMatrix: number[][]
+    private _columns: number[];
+    private _extendedMatrix: number[][];
+    private _extendedMatrixSize: number;
+    private _extendedMatrixSizePlusOne: number;
+    private _currentRange: number;
+    private _maxRange: number;
 
-    private mat: number[][];    // integer[i][j]
-    private cols: number[];   // integer[]
-    private m: number;      // count of rows of the matrix
-    private n: number;      // count of columns of the matrix
-    private np: number;     // count of columns of the enlarged matrix
-    private r: number;      // minimum rank of the matrix
-    private maxr: number;   // maximum rank of the matrix
+    constructor(matrixOrder: number) {
+        this._matrixOrder = matrixOrder;
+    }
 
     public solve(board: Tile[][]): string {
-        this.buildBinaryMatrix(board);
+        this._buildBinaryMatrix(board);
 
         var col;
         var row;
-        for (var goal = 0; goal < this.imgcount; goal++)
+        for (var goal = 0; goal < this._tileStates; goal++)
         {
             if (this.solveProblem(goal))
-            { // found an integer solution
+            {
                 var anscols = new Array();
                 var j;
-                for (j = 0; j < this.n; j++) anscols[this.cols[j]] = j;
-                for (col = 0; col < this.colcount; col++)
-                    for (row = 0; row < this.rowcount; row++)
+                for (j = 0; j < this._extendedMatrixSize; j++) anscols[this._columns[j]] = j;
+                for (col = 0; col < this._matrixOrder; col++)
+                    for (row = 0; row < this._matrixOrder; row++)
                 {
                     var value;
-                    j = anscols[row * this.colcount + col];
-                    if (j < this.r) value = this.a(j, this.n); else value = 0;
+                    j = anscols[row * this._matrixOrder + col];
+                    if (j < this._currentRange) value = this._a(j, this._extendedMatrixSize); else value = 0;
                     if (value === 1) return `${col}-${row}`;
                 }
                 return;
@@ -39,145 +40,153 @@ export default class GameSolver {
         }
     }
 
-    private buildBinaryMatrix(board: Tile[][]): void {
+    private _buildBinaryMatrix(board: Tile[][]): void {
+        this._binaryMatrix = [];
+
         board.forEach((row, i) => {
+            this._binaryMatrix.push([]);
+
             row.forEach((tile, j) => {
-                this.cells[i][j] = (tile.on) ? 1 : 0;
+                this._binaryMatrix[i][j] = (tile.on) ? 1 : 0;
             });
         });
     }
 
     private solveProblem(goal: number): boolean {
-        var size = this.colcount * this.rowcount;
-        this.m = size;
-        this.n = size;
-        this.np = this.n + 1;
-        this.initMatrix();
-        for (var col = 0; col < this.colcount; col++)
-            for (var row = 0; row < this.rowcount; row++)
-            this.mat[row * this.colcount + col][this.n] = this.modulate(goal - this.cells[col][row]);
-        return this.sweep();
+        var size = this._matrixOrder * this._matrixOrder;
+        this._extendedMatrixSize = size;
+        this._extendedMatrixSizePlusOne = this._extendedMatrixSize + 1;
+        this._initializeBinaryMatrix();
+        for (var col = 0; col < this._matrixOrder; col++)
+            for (var row = 0; row < this._matrixOrder; row++)
+            this._extendedMatrix[row * this._matrixOrder + col][this._extendedMatrixSize] = this._modulate(goal - this._binaryMatrix[col][row]);
+        return this._sweep();
     }
 
-    private initMatrix(): void {
-        this.maxr = Math.min(this.m, this.n);
-        this.mat = new Array();
-        for (var col = 0; col < this.colcount; col++)
-            for (var row = 0; row < this.rowcount; row++)
+    private _initializeBinaryMatrix(): void {
+        this._maxRange = Math.min(this._extendedMatrixSize, this._extendedMatrixSize);
+        this._extendedMatrix = new Array();
+        for (var col = 0; col < this._matrixOrder; col++)
+            for (var row = 0; row < this._matrixOrder; row++)
         {
-            var i = row * this.colcount + col;
+            var i = row * this._matrixOrder + col;
             var line = new Array();
-            this.mat[i] = line;
-            for (var j = 0; j < this.n; j++) line[j] = 0;
+            this._extendedMatrix[i] = line;
+            for (var j = 0; j < this._extendedMatrixSize; j++) line[j] = 0;
             line[i] = 1;
             if (col > 0) line[i - 1] = 1;
-            if (row > 0) line[i - this.colcount] = 1;
-            if (col < this.colcount - 1) line[i + 1] = 1;
-            if (row < this.rowcount - 1) line[i + this.colcount] = 1;
+            if (row > 0) line[i - this._matrixOrder] = 1;
+            if (col < this._matrixOrder - 1) line[i + 1] = 1;
+            if (row < this._matrixOrder - 1) line[i + this._matrixOrder] = 1;
         }
-        this.cols = new Array();
-        for (var j = 0; j < this.np; j++) this.cols[j] = j;
+        this._columns = new Array();
+        for (var j = 0; j < this._extendedMatrixSizePlusOne; j++) this._columns[j] = j;
     }
 
-    private sweep(): boolean {
-        for (this.r = 0; this.r < this.maxr; this.r++)
+    private _sweep(): boolean {
+        for (this._currentRange = 0; this._currentRange < this._maxRange; this._currentRange++)
         {
-            if (!this.sweepStep()) return false; // failed in founding a solution
-            if (this.r == this.maxr) break;
+            if (!this._sweepStep()) return false; 
+            if (this._currentRange == this._maxRange) break;
         }
-        return true; // successfully found a solution
+        
+        return true;
     }
 
-    private sweepStep(): boolean {
+    private _sweepStep(): boolean {
         var i;
         var j;
         var finished = true;
-        for (j = this.r; j < this.n; j++)
+        for (j = this._currentRange; j < this._extendedMatrixSize; j++)
         {
-            for (i = this.r; i < this.m; i++)
+            for (i = this._currentRange; i < this._extendedMatrixSize; i++)
             {
-                var aij = this.a(i, j);
+                var aij = this._a(i, j);
                 if (aij != 0) finished = false;
-                var inv = this.invert(aij);
+                var inv = this._invert(aij);
                 if (inv != 0)
                 {
-                    for (var jj = this.r; jj <this. np; jj++)
-                    this.setmat(i, jj, this.a(i, jj) * inv);
-                    this.doBasicSweep(i, j);
+                    for (var jj = this._currentRange; jj <this. _extendedMatrixSizePlusOne; jj++)
+                    this._setBinaryMatrix(i, jj, this._a(i, jj) * inv);
+                    this._doBasicSweep(i, j);
                     return true;
                 }
             }
         }
-        if (finished) { // we have: 0x = b (every matrix element is 0)
-            this.maxr = this.r;   // rank(A) == maxr
-            for (j = this.n; j < this.np; j++)
-                for (i = this.r; i < this.m; i++)
-                if (this.a(i, j) != 0) return false; // no solution since b != 0
-            return true;    // 0x = 0 has solutions including x = 0
+        if (finished) {
+            this._maxRange = this._currentRange;
+            for (j = this._extendedMatrixSize; j < this._extendedMatrixSizePlusOne; j++)
+                for (i = this._currentRange; i < this._extendedMatrixSize; i++)
+                if (this._a(i, j) != 0) return false;
+            return true;
         }
 
-        return false;   // failed in finding a solution
+        return false; 
     }
 
-    private swap(array: number[] | number[][], x: number, y: number): void {
+    private _swap(array: number[] | number[][], x: number, y: number): void {
         var tmp = array[x];
         array[x] = array[y];
         array[y] = tmp;
     }
 
-    private doBasicSweep(pivoti:number, pivotj:number): void {
-        if (this.r != pivoti) this.swap(this.mat, this.r, pivoti);
-        if (this.r != pivotj) this.swap(this.cols, this.r, pivotj);
-        for (var i = 0; i < this.m; i++)
+    private _doBasicSweep(pivoti: number, pivotj: number): void {
+        if (this._currentRange != pivoti) this._swap(this._extendedMatrix, this._currentRange, pivoti);
+        if (this._currentRange != pivotj) this._swap(this._columns, this._currentRange, pivotj);
+        
+        for (var i = 0; i < this._extendedMatrixSize; i++)
         {
-            if (i != this.r)
+            if (i != this._currentRange)
             {
-                var air = this.a(i, this.r);
+                var air = this._a(i, this._currentRange);
                 if (air != 0)
-                    for (var j = this.r; j < this.np; j++)
-                    this.setmat(i, j, this.a(i, j) - this.a(this.r, j) * air);
+                    for (var j = this._currentRange; j < this._extendedMatrixSizePlusOne; j++)
+                    this._setBinaryMatrix(i, j, this._a(i, j) - this._a(this._currentRange, j) * air);
             }
         }
     }
 
-
-    private a(i: number, j:number): number {
-        return this.mat[i][this.cols[j]];
+    private _a(i: number, j: number): number {
+        return this._extendedMatrix[i][this._columns[j]];
     }
 
-    private setmat(i: number, j: number, val: number): void {
-        this.mat[i][this.cols[j]] = this.modulate(val);
+    private _setBinaryMatrix(i: number, j: number, val: number): void {
+        this._extendedMatrix[i][this._columns[j]] = this._modulate(val);
     }
 
-    // --- finite field algebra solver
-    private modulate(x: number): number {
-        // returns z such that 0 <= z < imgcount and x == z (mod imgcount)
-        if (x >= 0) return x % this.imgcount;
-        x = (-x) % this.imgcount;
+    private _modulate(x: number): number {
+        if (x >= 0) return x % this._tileStates;
+
+        x = (-x) % this._tileStates;
         if (x == 0) return 0;
-        return this.imgcount - x;
+        
+        return this._tileStates - x;
     }
 
-    private gcd(x: number, y: number): number { // call when: x >= 0 and y >= 0
+    private _gcd(x: number, y: number): number {
         if (y == 0) return x;
         if (x == y) return x;
-        if (x > y) x = x % y; // x < y
+        if (x > y) x = x % y;
+
         while (x > 0)
         {
-            y = y % x; // y < x
+            y = y % x;
             if (y == 0) return x;
-            x = x % y; // x < y
+            x = x % y;
         }
+
         return y;
     }
 
-    private invert(value: number): number { // call when: 0 <= value < imgcount
-        // returns z such that value * z == 1 (mod imgcount), or 0 if no such z
+    private _invert(value: number): number {
         if (value <= 1) return value;
-        var seed = this.gcd(value, this.imgcount);
+
+        var seed = this._gcd(value, this._tileStates);
         if (seed != 1) return 0;
-        var a = 1, b = 0, x = value;    // invar: a * value + b * imgcount == x
-        var c = 0, d = 1, y = this.imgcount; // invar: c * value + d * imgcount == y
+
+        var a = 1, b = 0, x = value;
+        var c = 0, d = 1, y = this._tileStates;
+
         while (x > 1)
         {
             var tmp = Math.floor(y / x);
@@ -188,8 +197,7 @@ export default class GameSolver {
             tmp = b; b = d; d = tmp;
             tmp = x; x = y; y = tmp;
         }
+
         return a;
     }
-
 }
-
