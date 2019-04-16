@@ -2,12 +2,13 @@ import "../models/CustomElement.js";
 import http from "./Http.js";
 import { Tile } from "../models/Tile.js";
 import BoardManager from "./BoardManager.js";
+import constants from "../shared/constants.js";
 
 export default class TileManager {
     private _board: BoardManager;
     private _tileTemplate: string;
-    private _tileOnStyle = "casilla prendida";
-    private _tileOffStyle = "casilla apagada";
+    private _tileOnStyle = "tile on";
+    private _tileOffStyle = "tile off";
 
     public constructor(board: BoardManager) {
         this._board = board;
@@ -40,7 +41,7 @@ export default class TileManager {
                 this._board.addMovement();
 
                 const movements = this._board.getMovements().toString();
-                document.getElementById("movements").innerHTML = movements;
+                document.getElementById(constants.movementsId).innerHTML = movements;
 
                 if (this._board.gameFinished()) {
                     this._board.endGame();

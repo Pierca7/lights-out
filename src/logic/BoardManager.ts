@@ -4,6 +4,7 @@ import { Tile } from "../models/Tile.js";
 import GameSolver from "../logic/GameSolver.js";
 import TileManager from "./TileManager.js";
 import AppController from "../controllers/AppController.js";
+import constants from "../shared/constants.js";
 
 export default class BoardManager {
     private _rowTemplate: string;
@@ -40,7 +41,7 @@ export default class BoardManager {
             this._boardTemplate = await this._getBoardTemplate();
         }
         
-        document.getElementById("app").appendHTMLString(this._boardTemplate);
+        document.getElementById(constants.appId).appendHTMLString(this._boardTemplate);
 
         this._boardSize = Math.floor(boardSize);
 
@@ -64,9 +65,9 @@ export default class BoardManager {
         this._initializeBoardMatrix();
         this._movements = 0;
 
-        document.getElementById("tablero").remove();
-        document.getElementById("congratulations").remove();
-        document.getElementById("movements").innerHTML = "-";
+        document.getElementById(constants.boardId).remove();
+        document.getElementById(constants.congratulationsId).remove();
+        document.getElementById(constants.movementsId).innerHTML = "-";
 
         this._app.createControls();
         
@@ -121,8 +122,8 @@ export default class BoardManager {
         }
 
         const newRow = this._rowTemplate.replace("{0}", rowIndex.toString());
-        document.getElementById("tablero").appendHTMLString(newRow);
-        const newRowElement = document.getElementById(`fila${rowIndex}`);
+        document.getElementById(constants.boardId).appendHTMLString(newRow);
+        const newRowElement = document.getElementById(`${constants.rowId}${rowIndex}`);
 
         return newRowElement;
     }

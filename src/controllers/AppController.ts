@@ -1,5 +1,6 @@
 import http from "../logic/Http.js";
 import BoardManager from "../logic/BoardManager.js";
+import constants from "../shared/constants.js";
 import "../models/CustomElement.js"
 
 export default class AppController {
@@ -19,7 +20,7 @@ export default class AppController {
             this._controlsTemplate = await http.get("public/views/controls.html");
         }
 
-        document.getElementById("app").appendHTMLString(this._controlsTemplate);
+        document.getElementById(constants.appId).appendHTMLString(this._controlsTemplate);
 
         this._addInputAttributes(this._minValue);
         this._addButtonAttributes();
@@ -30,24 +31,24 @@ export default class AppController {
             this._congratulationsTemplate = await this._getCongratulationsTemplate();
         }
         
-        const actualRecord = document.getElementById("record").innerHTML;
+        const actualRecord = document.getElementById(constants.recordId).innerHTML;
         const newScore = this._boardManager.getMovements().toString();
 
         if (actualRecord === "-" || Number(newScore) < Number(actualRecord)) {
-            document.getElementById("record").innerHTML = newScore;
+            document.getElementById(constants.recordId).innerHTML = newScore;
         }
 
         const congratulations = this._congratulationsTemplate.replace("{0}", newScore);
 
-        document.getElementById("tablero").className += " hidden";
-        document.getElementById("app").appendHTMLString(congratulations);  
-        document.getElementById("reset").addEventListener("click", () => {
+        document.getElementById(constants.boardId).className += " hidden";
+        document.getElementById(constants.appId).appendHTMLString(congratulations);  
+        document.getElementById(constants.resetButtonId).addEventListener("click", () => {
             this._boardManager.resetBoard();
         })                  
     }
 
     private _addInputAttributes(minValue: number): void {
-        const boardSizeInput = <HTMLInputElement>document.getElementById("cantidadFilas");
+        const boardSizeInput = <HTMLInputElement>document.getElementById(constants.tileInputId);
         const minValueString = String(minValue);
 
         boardSizeInput.value = minValueString;
@@ -56,14 +57,14 @@ export default class AppController {
     }
 
     private _addButtonAttributes(): void {
-        document.getElementById("boton").addEventListener("click", async (event: Event) => {
-            const boardSize = Number((<HTMLInputElement>document.getElementById("cantidadFilas")).value);
+        document.getElementById(constants.playButtonId).addEventListener("click", async (event: Event) => {
+            const boardSize = Number((<HTMLInputElement>document.getElementById(constants.tileInputId)).value);
 
             if (boardSize > this._minValue * 2) {
                 return;
             }
 
-            document.getElementById("controles").remove();
+            document.getElementById(constants.controlsId).remove();
 
             await this._boardManager.createBoard(boardSize);
             await this._createClueButton();
@@ -78,11 +79,11 @@ export default class AppController {
             this._clueButtonTemplate = await this._getClueButtonTemplate();
         }
 
-        document.getElementById("tablero").appendHTMLString(this._clueButtonTemplate);
+        document.getElementById(constants.boardId).appendHTMLString(this._clueButtonTemplate);
     }
 
     private async _addClueButtonAttributes(): Promise<void> {
-        document.getElementById("clueButton").addEventListener("click", () => {
+        document.getElementById(constants.clueButtonId).addEventListener("click", () => {
             this._boardManager.giveClue();
         });
     }
