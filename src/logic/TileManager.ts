@@ -7,6 +7,7 @@ export default class TileManager {
     private _board: BoardManager;
     private _boardSize: number;
     private _tileTemplate: string;
+    private _congratulationsTemplate: string;
     private _tileOnStyle = "casilla prendida";
     private _tileOffStyle = "casilla apagada";
 
@@ -37,12 +38,32 @@ export default class TileManager {
         [].concat(...this._board.getBoard()).forEach((tile: Tile) => {
             const tileElement = document.getElementById(tile.id);
 
-            tileElement.addEventListener("click", (event: Event) => {
+            tileElement.addEventListener("click", async (event: Event) => {
                 this._updateTiles(event)
-                this._board.getSolver().solve(this._board.getBoard());
+                this._board.addMovement();
+
+                const movements = this._board.getMovements().toString();
+
+                document.getElementById("movements").innerHTML = movements
 
                 if (this.gameFinished()) {
+                    if (!this._congratulationsTemplate){
+                        this._congratulationsTemplate = await this._getCongratulationsTemplate();
+                    }
+                    
+                    const actualRecord = document.getElementById("record").innerHTML;
+
+                    if (!actualRecord || Number(movements) < Number(actualRecord)) {
+                        document.getElementById("record").innerHTML = movements;
+                    }
+
+                    const congratulations = this._congratulationsTemplate.replace("{0}", this._board.getMovements().toString());
+
                     document.getElementById("tablero").className += " hidden";
+                    document.getElementById("app").appendHTMLString(congratulations);  
+                    document.getElementById("reset").addEventListener("click", () => {
+                        this._board.resetBoard();
+                    })                  
                 }
             })
         });
@@ -86,6 +107,10 @@ export default class TileManager {
 
     private _getTileTemplate(): Promise<string> {
         return http.get("public/views/tile.html");
+    }
+
+    private _getCongratulationsTemplate(): Promise<string> {
+        return http.get("public/views/congratulations.html");
     }
 }
 

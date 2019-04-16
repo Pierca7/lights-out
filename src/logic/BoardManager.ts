@@ -3,14 +3,29 @@ import http from "./Http.js";
 import { Tile } from "../models/Tile.js";
 import GameSolver from "../logic/GameSolver.js";
 import TileManager from "./TileManager.js";
+import AppController from "../controllers/AppController.js";
 
 export default class BoardManager {
     private _rowTemplate: string;
     private _boardTemplate: string;
     private _boardSize: number;
     private _board: Tile[][];
+    private _movements: number = 0;
     private _tileManager: TileManager;
     private _solver: GameSolver;
+    private _app: AppController;
+    
+    public constructor(app: AppController) {
+        this._app = app;
+    }
+
+    public getMovements(): number {
+        return this._movements;
+    }
+
+    public addMovement(): void {
+        this._movements++;
+    }
 
     public getSolver(): GameSolver {
         return this._solver;
@@ -45,18 +60,23 @@ export default class BoardManager {
 
     public resetBoard(): Promise<void> {
         this._initializeBoardMatrix();
-        document.getElementById("tablero").remove();
+        this._movements = 0;
         
-        return this.createBoard(this._boardSize);
+        document.getElementById("tablero").remove();
+        document.getElementById("congratulations").remove();
+        document.getElementById("movements").innerHTML = "";
+
+        this._app.createControls();
+        
+        return;
     }
 
     public giveClue(): void {
         const tileToClick = this._solver.solve(this._board);
-        console.log(tileToClick);
         document.getElementById(tileToClick).className += " flicker";
     }
 
-    public addTileEvents(): void {
+    public addBoardEvents(): void {
         if (this._tileManager) this._tileManager.addTileAttributes();
     }
     

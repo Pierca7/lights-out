@@ -9,11 +9,11 @@ export default class AppController {
     private _boardManager: BoardManager;
 
     public constructor() {
-        this._createControls();
-        this._boardManager = new BoardManager();
+        this.createControls();
+        this._boardManager = new BoardManager(this);
     }
 
-    private async _createControls(): Promise<void> {
+    public async createControls(): Promise<void> {
         if (!this._controlsTemplate){
             this._controlsTemplate = await http.get("public/views/controls.html");
         }
@@ -35,13 +35,18 @@ export default class AppController {
 
     private _addButtonAttributes(): void {
         document.getElementById("boton").addEventListener("click", async (event: Event) => {
-            document.getElementById("controles").hidden = true;
             const boardSize = Number((<HTMLInputElement>document.getElementById("cantidadFilas")).value);
 
+            if (boardSize > this._minValue * 2) {
+                return;
+            }
+
+            document.getElementById("controles").remove();
+            
             await this._boardManager.createBoard(boardSize);
             await this._createClueButton();
             
-            this._boardManager.addTileEvents();
+            this._boardManager.addBoardEvents();
             this._addClueButtonAttributes();
         });
     }
