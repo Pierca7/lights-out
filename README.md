@@ -14,3 +14,6 @@ The game provides a clues system, which calculates the next tile you need to pre
 
 **The yellow tiles represent the lights on, the grey tiles the lights off while the green tile is the clue given by the app.**
 ![Lights out!](media/lights-out.png)
+
+## Credits
+The logic for the game solver was adapted from http://perfectweb.org/ddo/solver/vale_puzzle.html
