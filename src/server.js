@@ -8,4 +8,4 @@ app.get("/", (req, res) => {
     res.sendFile(`${__dirname }/views/index.html`);
 });
 
-app.listen(port, () => console.log(`Navega a http://localhost:${port} para ver la app.`));
+app.listen(port, () => console.log(`Please navigate to http://localhost:${port} to see the app.`));

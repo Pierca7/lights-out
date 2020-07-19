@@ -1,5 +1,5 @@
 const http = {
-    get: (url: string): Promise<any> => {
+    get: <T>(url: string): Promise<T> => {
         const request = new XMLHttpRequest();
     
         return new Promise((resolve, reject) => {
