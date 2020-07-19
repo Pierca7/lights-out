@@ -1,28 +1,25 @@
 import "../models/CustomElement.js";
-import http from "./Http.js";
 import { Tile } from "../models/Tile.js";
 import BoardManager from "./BoardManager.js";
-import constants from "../shared/constants.js";
+import constants from "../shared/Constants.js";
+import Templates from "../shared/TemplateProvider.js";
 
-export default class TileManager {
+class TileManager {
     private _board: BoardManager;
-    private _tileTemplate: string;
+    private _templates: Templates;
     private _tileOnStyle = "tile on";
     private _tileOffStyle = "tile off";
 
-    public constructor(board: BoardManager) {
+    public constructor(board: BoardManager, templates: Templates) {
+        this._templates = templates;
         this._board = board;
     }
-    
-    public async createTile(row: HTMLElement, rowIndex: number, columnIndex: number): Promise<Tile> {
-        if (!this._tileTemplate){
-            this._tileTemplate = await this._getTileTemplate();
-        }
 
+    public async createTile(row: HTMLElement, rowIndex: number, columnIndex: number): Promise<Tile> {
         const initialState: boolean = Math.round(Math.random()) === 1;
-        const id = `${rowIndex}-${columnIndex}`;  
-        const newTile = this._tileTemplate.replace("{0}", id )
-        .replace("{1}", initialState ? this._tileOnStyle : this._tileOffStyle);
+        const id = `${rowIndex}-${columnIndex}`;
+        const newTile = this._templates.tile.replace("{0}", id)
+            .replace("{1}", initialState ? this._tileOnStyle : this._tileOffStyle);
 
         row.appendHTMLString(newTile);
 
@@ -49,27 +46,20 @@ export default class TileManager {
             })
         });
     }
-    
+
     private _updateTiles(event: Event): void {
         const clickedTile = <HTMLElement>event.srcElement;
         const tilesToChange = this._board.findTilesToChange(clickedTile);
-    
+
         tilesToChange.forEach(tileToChange => this._changeState(tileToChange));
     }
-    
+
     private _changeState(tileToChange: Tile): void {
         const element = document.getElementById(tileToChange.id);
-         
+
         tileToChange.on = !tileToChange.on;
         element.className = tileToChange.on ? this._tileOnStyle : this._tileOffStyle;
     }
-
-    private _getTileTemplate(): Promise<string> {
-        return http.get("public/views/tile.html");
-    }
-
-
 }
 
-
-
+export default TileManager;

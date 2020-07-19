@@ -10,7 +10,8 @@ const constants = {
     tileInputId: "tileAmount",
     playButtonId: "playButton",
     movementsId: "movements",
-    recordId: "record"
+    recordId: "record",
+    scorePanelId: "score-panel"
 }
 
 export default constants;

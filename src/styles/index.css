@@ -5,21 +5,38 @@ body {
 
 button {
     margin: 5px;
+    padding: 5px;
+    border: 1px solid black;
+    border-radius: 10px;
+    background-color: white;
+    font-weight: 600;
+    letter-spacing: 0.5px;
 }
 
-.title {    
+button:focus {
+    outline: none;
+}
+
+button:hover {
+    background-color: black;
+    color: white;
+}
+
+.title {
     font-family: Verdana, Geneva, Tahoma, sans-serif;
     font-size: 3rem;
     text-align: center;
-    text-shadow: 3px 0 0 black, -3px 0 0 black, 0 3px 0 black, 0 -3px 0 black, 1.5px 1.5px black, -1.5px -1.5px 0 black, 1.5px -1.5px 0 black, -1.5px 1.5px 0 black;
+    text-shadow: 3px 0 0 black, -3px 0 0 black, 0 3px 0 black, 0 -3px 0 black, 1.5px 1.5px black, -1.5px -1.5px 0 black,
+        1.5px -1.5px 0 black, -1.5px 1.5px 0 black;
 }
 
-.subtitle {    
+.subtitle {
     animation: rainbow 1s infinite alternate;
     font-family: Verdana, Geneva, Tahoma, sans-serif;
     font-size: 2rem;
     text-align: center;
-    text-shadow: 2px 0 0 black, -2px 0 0 black, 0 2px 0 black, 0 -2px 0 black, 1px 1px black, -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black;
+    text-shadow: 2px 0 0 black, -2px 0 0 black, 0 2px 0 black, 0 -2px 0 black, 1px 1px black, -1px -1px 0 black,
+        1px -1px 0 black, -1px 1px 0 black;
 }
 
 .game-info {
@@ -30,12 +47,15 @@ button {
 
 .tile-amount {
     margin: 0;
+    margin-bottom: 5px;
     -webkit-appearance: none;
     -moz-appearance: textfield;
     border-radius: 25px;
-    border-color: black;
-    border-style: solid;
-    border-width: 3px;
+    border: 1px solid black;
+}
+
+.tile-amount:focus {
+    outline: none;
 }
 
 .hidden {
@@ -48,8 +68,8 @@ button {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-	width: 100%;
-    margin: 2rem;
+    width: 100%;
+    padding: 2rem;
     opacity: 0.95;
 }
 
@@ -68,8 +88,16 @@ button {
 }
 
 @keyframes rainbow {
-	0% { color: blue; }
-    33% { color: red; }
-    66% { color: yellow; }
-    100% { color: blue; }
+    0% {
+        color: yellowgreen;
+    }
+    33% {
+        color: yellow;
+    }
+    66% {
+        color: yellowgreen;
+    }
+    100% {
+        color: yellow;
+    }
 }

@@ -1,14 +1,15 @@
 {
     "compilerOptions": {
-        "module": "ES6",
-        "noImplicitAny": true,
-        "outDir": "src/bin"
+        "allowSyntheticDefaultImports": true,
+        "module": "ESNext",
+        "target": "ESNext",
+        "noImplicitAny": false,
+        "outDir": "src/bin",
     },
     "include": [
-        "src/**/*.ts"
+        "src/**/*"
     ],
     "exclude": [
         "node_modules",
-        "src/bin"
     ]
 }
